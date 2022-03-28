@@ -1,15 +1,32 @@
+name: Release Drafter
 
-name: Create pre-release notes on github
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'the version number to release'
-        required: true
+  push:
+    # branches to consider in the event; optional, defaults to all
+    branches:
+      - master
+  # pull_request event is required only for autolabeler
+  pull_request:
+    # Only following types are handled by the action, but one can default to all as well
+    types: [opened, reopened, synchronize]
+  # pull_request_target event is required for autolabeler to support PRs from forks
+  # pull_request_target:
+  #   types: [opened, reopened, synchronize]
+
 jobs:
-  release-to-github:
+  update_release_draft:
     runs-on: ubuntu-latest
     steps:
-      - name: Generate release-note
-        run: sh release/generate-release-note.sh "`cat VERSION`"
+      # (Optional) GitHub Enterprise requires GHE_HOST variable set
+      #- name: Set GHE_HOST
+      #  run: |
+      #    echo "GHE_HOST=${GITHUB_SERVER_URL##https:\/\/}" >> $GITHUB_ENV
 
+      # Drafts your next Release notes as Pull Requests are merged into "master"
+      - uses: release-drafter/release-drafter@v5
+        # (Optional) specify config name to use, relative to .github/. Default: release-drafter.yml
+        # with:
+        #   config-name: my-config.yml
+        #   disable-autolabeler: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

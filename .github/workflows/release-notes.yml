@@ -1,0 +1,15 @@
+
+name: Create pre-release notes on github
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'the version number to release'
+        required: true
+jobs:
+  release-to-github:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate release-note
+        run: sh tools/release/generate-release-note.sh "`cat VERSION`"
+
